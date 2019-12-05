@@ -1,0 +1,6 @@
+15
+ls
+pwd
+echo Hello, world! 
+cat my_exec.c
+

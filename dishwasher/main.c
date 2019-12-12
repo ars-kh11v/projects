@@ -41,7 +41,7 @@ Dish DefineDish(char* name)
 
 void SemCreate(int *semid, int count)
 {
-    char pathname[] = "help_sem.c";
+    char pathname[] = "key";
 
     key_t key;
 
@@ -75,7 +75,7 @@ int main(void)
     SemOperation(semid, TABLE_LIMIT, 0);
 
     int msqid;
-    char pathname[]="help.c";
+    char pathname[]="help";
     key_t  key;
     size_t len = sizeof(Dish);
 
@@ -84,7 +84,6 @@ int main(void)
         long mtype;
         Dish current_dish;
     } msg_buf;
-
 
 
     key = ftok(pathname, 0);

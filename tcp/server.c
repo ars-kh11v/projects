@@ -136,6 +136,6 @@ int main()
 //        }
         /* Закрываем дескриптор присоединенного сокета и
         уходим ожидать нового соединения */
-//        close(mysockfd.newsockfd);
+//       close(mysockfd.newsockfd);
     }
 }

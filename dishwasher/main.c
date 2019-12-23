@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <zconf.h>
+//#include <zconf.h>
 #include <sys/sem.h>
 #include <unistd.h>
 #include <sys/errno.h>
@@ -33,7 +33,7 @@ Dish DefineDish(char* name)
     if (!strcmp(name, "cup"))
         return cup;
     if (!strcmp(name, "knife"))
-        return knife;
+ 	return knife;
     if (!strcmp(name, "spoon"))
         return spoon;
     exit(5);
@@ -105,37 +105,34 @@ int main(void)
                 exit(-1);
             }
             Dish current_dish = rcv_buf.current_dish;
-            printf("Dryer took the %s.\n", current_dish.name);
+            printf("Wiper took the %s.\n", current_dish.name);
             sleep(current_dish.dry_time);
-            printf("Dryer finished dry the %s.\n", current_dish.name);
+            printf("Wiper finished %s.\n", current_dish.name);
             SemOperation(semid, 1, 0);
+	    if (rcv_buf.mtype == 228)
+	    {
+		    printf("got last msg\n");
+		    exit(0);
+	    
+	    }
         }
     }
     else
     {
-        FILE *fin;
-        fin = fopen("dirty_heap.txt","r");
-        if(errno){
-            perror(":(");
-            exit(1);
-        }
+        FILE *file = fopen("source.txt","r");
         int N;
-        fscanf(fin,"%d", &N);
+        fscanf(file,"%d", &N);
         char name[MAX_STRING_SIZE];
         int count;
         Dish current_dish;
         msg_buf snd_buf;
         for (int i = 0; i < N; ++i) {
-            fscanf(fin, "%s%d", name, &count);
+            fscanf(file, "%s%d", name, &count);
             current_dish = DefineDish(name);
             for (int j = 0; j < count; ++j) {
-                //printf("Washer took a %s (%i)\n", current_dish.name, j + 1);
                 sleep(current_dish.wash_time);
-                //printf("Washer washed the %s (%i).\n", current_dish.name, j + 1);
-
-                //sending
                 snd_buf.mtype = 1;
-                snd_buf.current_dish = current_dish;
+		snd_buf.current_dish = current_dish;
                 if (msgsnd(msqid, &snd_buf, len, 0) < 0)
                 {
                     printf("Can\'t send message to queue\n");
@@ -143,14 +140,18 @@ int main(void)
                     exit(-1);
                 }
 
-                printf("Washer put the %s (%i) on the table.\n", current_dish.name, j + 1);
+                printf("Washer put the %s on the table.\n", current_dish.name);
                 SemOperation(semid, -1, 0);
 
             }
+	     if (i == N - 1)
+             {
+                snd_buf.mtype = 228;
+                printf("sent last\n");
+             }
         }
-        fclose(fin);
-        int status;
-        wait(&status);
+        fclose(file);
+	exit(0);
     }
 
     return 0;

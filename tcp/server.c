@@ -19,22 +19,24 @@ struct mysocket
 } mysockfd;
 
 void* While(void* mySocket){
-	struct mysocket mysockfd = *(struct mysocket*)mySocket;
-	char line[1000];
-	int n;
-    while((n = read(mysockfd.newsockfd, line, 999)) > 0){
-        /* Принятые данные отправляем обратно */
-    	for (int i = 0; i < nclients; ++i){
-    		if (descriptors[i] != mysockfd.newsockfd){
-				if((n = write(descriptors[i], line,
-				strlen(line)+1)) < 0){
-					perror(NULL);
-					close(mysockfd.sockfd);
-					close(mysockfd.newsockfd);
-					exit(1);
-				}
-    		}
-    	}
+    struct mysocket mysockfd = *(struct mysocket*)mySocket;
+    char line[1000];
+    int n;
+    while((n = read(mysockfd.newsockfd, line, 999)) > 0)
+    {
+        for (int i = 0; i < nclients; ++i)
+        {
+            if (descriptors[i] != mysockfd.newsockfd)
+            {
+	        if((n = write(descriptors[i], line,strlen(line)+1)) < 0)
+	        {
+	           perror(NULL);
+	           close(mysockfd.sockfd);
+	           close(mysockfd.newsockfd);
+	           exit(1);
+	        }
+            }
+        }
     }
 }
 
@@ -115,27 +117,7 @@ int main()
         операциях чтения и записи пользуемся дескриптором
         присоединенного сокета, т. е. значением, которое
         вернул вызов accept().*/
-  	    pthread_create(&thid, (pthread_attr_t *)NULL, While, &mysockfd);
-//        while((n = read(mysockfd.newsockfd, line, 999)) > 0){
-            /* Принятые данные отправляем обратно */
-//            if((n = write(mysockfd.newsockfd, line,
-//            strlen(line)+1)) < 0){
-//                perror(NULL);
-//                close(mysockfd.sockfd);
-//                close(mysockfd.newsockfd);
-//                exit(1);
-//            }
-//        }
-  	    i++;
-    /* Если при чтении возникла ошибка – завершаем работу */
-//    if(n < 0){
-//            perror(NULL);
-//            close(mysockfd.sockfd);
-//            close(mysockfd.newsockfd);
-//            exit(1);
-//        }
-        /* Закрываем дескриптор присоединенного сокета и
-        уходим ожидать нового соединения */
-//       close(mysockfd.newsockfd);
+  	pthread_create(&thid, (pthread_attr_t *)NULL, While, &mysockfd);
+	i++;
     }
 }

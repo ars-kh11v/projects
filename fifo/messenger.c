@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
     
     for (int i = 0; i < 2; ++i)
     {
-    	if ((mknod(fifo[i], S_IFIFO | 0666, 0) < 0) && (errno != EEXIST))
+    	if ((mknod(fifo[i], S_IFIFO | 0666, 0) < 0))// && (errno != EEXIST))
     	{
         	printf("Can\'t create FIFO\n");
         	exit(-1);
@@ -32,6 +32,7 @@ int main(int argc, char *argv[])
 
     if((result = fork()) < 0)
     {
+	printf("Can't fork\n");
         exit(-1);
     }
     if (result > 0)

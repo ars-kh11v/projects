@@ -19,11 +19,11 @@ typedef struct Dishes
     unsigned int dry_time;
 } Dish;
 
-//the place for different experiments
-Dish plate = {"plate",1,8};
-Dish cup = {"cup",1,6};
+Dish plate = {"plate",1,10};
+Dish cup = {"cup",1,3};
 Dish knife = {"knife",1,4};
 Dish spoon = {"spoon",1,4};
+
 
 Dish DefineDish(char* name)
 {
@@ -76,7 +76,7 @@ int main(void)
     int msqid;
     char pathname[]="help";
     key_t  key;
-    size_t len = sizeof(Dish);
+    size_t len = 1000;
 
     typedef struct mymsgbuf
     {
@@ -141,16 +141,15 @@ int main(void)
 
                 printf("Washer put the %s on the table.\n", current_dish.name);
                 SemOperation(semid, -1, 0);
-
             }
-	     if (i == N - 1)
-             {
-                snd_buf.mtype = 228;
-                printf("sent last\n");
-             }
-        }
-        fclose(file);
-	exit(0);
+	    if (i == N - 1)
+            {
+               snd_buf.mtype = 228;
+               printf("sent last\n");
+            }
+       }
+       fclose(file);
+       exit(0);
     }
 
     return 0;
